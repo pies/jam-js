@@ -1,6 +1,6 @@
 
 provides('Dom.Element');
-requires('Lang.Shape');
+requires('Shape');
 
 extend('JAM.Dom.Element', {
 
