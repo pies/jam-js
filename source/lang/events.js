@@ -75,7 +75,7 @@ extend('JAM.Lang.Events', {
 		return ID;
 	},
 
-	_mousePosition: [0,0],
+	_mousePosition: {x:0,y:0,page:{x:0,y:0}},
 	_mouseButtons:  [],
 
 	_initMouseTracker: function(){
@@ -88,14 +88,22 @@ extend('JAM.Lang.Events', {
 		this._mousePosition = {
 			x: E.clientX, 
 			y: E.clientY,
-			px: E.pageX,
-			py: E.pageY
+			page: {x: E.pageX, y: E.pageY}
 		};
 
 		//var P = this._mousePosition;
 		//debug('saving mouse position', P.x,P.y,P.px,P.py);
 	},
-
+    /* this could be used for a lot of things: DOMContentLoaded etc.  */
+    normalize : {
+        mousewheel : function(){
+            if(!(JAM.Browser.is('Opera') || JAM.Browser.is('IE'))){
+                return 'DOMMouseScroll';
+            }
+            return 'mousewheel';
+        }
+    },
+            
 	_trackMouseButtons: function(event){
 		var E = event.event;
 		var DOWN = ('mousedown' == (E.type||''));
@@ -110,7 +118,12 @@ extend('JAM.Lang.Events', {
 	connect: function (obj, name, context, func) {
 		if (window.$) obj = $(obj);
 		if (!obj) return obj;
-
+        
+        /* or see normalize method */
+        if (name == 'mousewheel' && !(JAM.Browser.is('Opera') || JAM.Browser.is('IE'))){ 
+             name = 'DOMMouseScroll';                         
+        } 
+//        name = JAM.Lang.Events.normalize[name] ?  JAM.Lang.Events.normalize[name]() : name;
 		var onlyOne = (JAM.Lang.Type && JAM.Lang.Type.isString(name));
 
 		var names = onlyOne? [name]: name;
@@ -252,7 +265,16 @@ JAM.Lang.Event.prototype = {
         	return undefined;
         }
     },
- 	
+    // normalized to 1;	
+    wheel: function(){
+        var delta = 0;
+        if (!this.event) return 0;
+        var E = this.event;
+        delta = E.wheelDelta ? E.wheelDelta : - E.detail;
+        if(JAM.Browser.is('Opera'))delta =-delta;
+        return delta ? delta/Math.abs(delta): 0
+    },
+
 	// >> from Mochikit & Prototype
 	mouse: function () { 
 		if (!this.event) return;
@@ -271,8 +293,9 @@ JAM.Lang.Event.prototype = {
 		return /*(this.type && this.type.match(/mouse|click|contextmenu/))?*/ {
 	        x:       max( 0, M.x ),
 	        y:       max( 0, M.y ),
-	        page_x:  max( 0, M.px || (M.x + B.scrollLeft - B.clientLeft) ),
-	        page_y:  max( 0, M.py || (M.y + B.scrollTop  - B.clientTop) ),
+	        page: {x:  max( 0, M.page.x || (M.x + B.scrollLeft - B.clientLeft) )
+	              ,y:  max( 0, M.page.y || (M.y + B.scrollTop  - B.clientTop) )
+            },
 	        buttons: JAM.Lang.Events._mouseButtons
     	}/*:undefined*/;
     },
