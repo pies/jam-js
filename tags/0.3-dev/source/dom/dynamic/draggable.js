@@ -106,82 +106,38 @@ extend('JAM.Dom.Draggable', {
 var FX = create({
 
 	initialize: function(elem){
-		this.ELEM = elem;
-		return this;
+		this.elem = elem;
 	},
 
 	_cos: function(pos){
 		return 1.0*((-Math.cos(pos*Math.PI)/2) + 0.5);
 	},
-
-	_sqrt: function(pos) {
-		return Math.sqrt(pos);
-	},
 	
-	_cubic: function(pos){
-		return Math.pow(pos, 3);
-	},
-	
-	glide: function(duration, start, vector) {
+	glide: function(length, start, vector) {
 		this.START = start;
 		this.V = vector;
 		this.FX = this._cos;
 
 		this.APPLY = function(){
 			var M = -1 * this.FX(this.STEP/this.TOTAL);
-			this.ELEM.setPosition({ 
+			this.elem.setPosition({ 
 				x: Math.round(this.START.x + (M * this.V.x)),
 				y: Math.round(this.START.y + (M * this.V.y))
 		})}.bind(this);
 
-		this.GO(duration);
+		this.GO(length);
 	},
 
-	ResizeWithWobble: function(finish, duration) {
-		
-		this.START = this.ELEM.getArea();
-		this.FINISH = finish;
-		this.VECTOR = {  w: finish.w - this.START.w,  h: finish.h - this.START.h  };
-
-		this.FX = function(pos) {
-
-			var M = this._cos(pos);
-			var OFFSET = { w: (this.VECTOR.w*M).round(), h: (this.VECTOR.h*M).round() };
-
-			return pos < 1? { 
-				w: this.START.w + OFFSET.w, 
-				h: this.START.h + OFFSET.h, 
-				x: this.START.x - (OFFSET.w/2).round(), 
-				y: this.START.y - (OFFSET.h/2).round() 
-			}:{
-				w: this.FINISH.w, 
-				h: this.FINISH.h,
-				x: this.START.x+(this.START.w-this.FINISH.w)/2,
-				y: this.START.y+(this.START.h-this.FINISH.h)/2
-			}
-		};
-
-		this.APPLY = function () {
-			var AREA = this.FX( this.STEP/this.TOTAL );
-			this.ELEM.setArea( AREA );
-		}
-
-		this.GO(duration||.5);
-	},
-
-	GO: function(duration){
-		this.STEP = 0;
-		this.TOTAL = ((duration*1000) / 25).round();
-		this.TIMER = setInterval(this.LOOP.bind(this), 25);
+	GO: function(speed){
+		this.STEP = 2;
+		this.TOTAL = ((speed*1000) / 30).round() + 2;
+		this.TIMER = setInterval(this.LOOP.bind(this), 30);
 	},
 
 	LOOP: function(){
-		if (++this.STEP > this.TOTAL) return this.STOP();
+		this.STEP++;
+		if (this.STEP > this.TOTAL) return clearInterval(this.TIMER);
 		this.APPLY();
-	},
-
-	STOP: function() {
-		return clearInterval(this.TIMER);
 	}
 });
 

@@ -1,26 +1,24 @@
 <?
 
-/* Configuration ------------------------------------------------------------ */
+/* Configuration
+   -------------------------------------------------------------------------- */
+
+define('APP_NAME', 'JAM');
+define('APP_REVISION', substr('$Revision$', 11, -2));
+define('APP_VERSION', '0.1.0 DEV ('.APP_REVISION.')');
 
 define('DEBUG', true);
-define('PLAINTEXT', true); // HTML pretty-print, or simple plaintext?
 
 
-/* Directory layout --------------------------------------------------------- */
+/* Directory layout
+   -------------------------------------------------------------------------- */
 
-define('_ROOT', dirname(dirname(__FILE__)));
+define('_ROOT', dirname(__FILE__));
 define('_LOGS', _ROOT);
 
 
-/* Web root ----------------------------------------------------------------- */
-
-//define('WWW', dirname($_SERVER['PHP_SELF']).'/?');
-$WWW = dirname($_SERVER['PHP_SELF']);
-define('WWW', $WWW=='/'?'':$WWW);
-
-
-
-/* Define time and calendar ------------------------------------------------- */
+/* Define time and calendar
+   -------------------------------------------------------------------------- */
 
 define ('SECOND',    1);
 define ('MINUTE',   60*SECOND);
@@ -38,14 +36,8 @@ define ('SATURDAY',  6);
 define ('SUNDAY',    0);
 
 
-/* Main framework functions ------------------------------------------------- */
-
-/**
-Takes an argument from provided array, if it doesn't exist, returns default 
-*/
-function GET ($array, $index, $default=false) {
-	return isset($array[$index])? $array[$index]: $default;
-}
+/* Main framework functions
+   -------------------------------------------------------------------------- */
 
 /* Loads a library or libraries (provided as parameters) */
 function load ($name /*, ... */) {
@@ -60,52 +52,40 @@ function load ($name /*, ... */) {
 	return true;
 }
 
-
-/* Relatively renders and inserts files inside 
-   current template (a "smarter" include() ) */
-function insert ($name, $allow_external_linking=true) {
+/* Relatively renders and inserts files inside current template (a "smarter" include() ) */
+function insert () {
+	$args = func_get_args();
+	$args = array_flatten($args);
 
 	$caller = caller_file();
 	$relative_to = dirname($caller);
 	$format = substr($caller, strrpos($caller, '.')+1);
 
-	$root = str_replace('\\', '/', _ROOT.'/source/');
 	$output = '';
-
-	$path = str_replace('\\', '/', 
-		(($name[0] == '/')? SOURCE_PATH: $relative_to)."/$name.$format");
-
-	$header = "// {$name} ".str_repeat('>', 67-strlen($path))." \n\n";
-
-	if (OM_DYNAMIC==OUTPUT_MODE) {
-		return "JAM.requires('$name');\n";
+	foreach ($args as $file) {
+		$path = ($file[0] == '/')? _APP: $relative_to;
+		$output .= render("$path/$file.$format");
 	}
-	else {
-		return $header.render($path)."\n\n\n";
-	}
+	return "\n\n".$output."\n\n";
 }
-
 
 /* Renders a PHP template */
 function render ($__name, $__data=array()) {
 
-	$N = $__name;
-
-	if (!is_readable_file($N)) {
-		$caller = caller_file(2);
+	if (!is_readable_file($__name)) {
+		$caller = caller_file();
 		$relative_to = dirname($caller);
-		$format = substr($N, strrpos($N, '.')+1);
-		if (!$format) $N .= substr($caller, strrpos($caller, '.')+1);
-		$N = $relative_to.'/'.$N;//.'.'.$format;
+		$format = substr($caller, strrpos($caller, '.')+1);
+		$__name = $relative_to.$__name.'.'.$format;
 	}
-
-	if (!is_readable_file($N)) {
+	
+	if (!is_readable_file($__name)) {
 		error("Can't open file $__name");
 	}
 
 	extract($__data, EXTR_SKIP);
 	ob_start();
-	include($N);
+	include($__name);
 	return ob_get_clean();
 }
 
@@ -153,9 +133,7 @@ function run ($url) {
 			//$app->output_format = 'html';
 		}
 
-		if (strlen(@$parts[0])
-				&&	($parts[0][0] != '_')
-					&& method_exists($app, $parts[0])) {
+		if (strlen(@$parts[0]) && ($parts[0][0] != '_') && method_exists($app, $parts[0])) {
 			$action = array_shift($parts);
 		}
 		elseif (method_exists($app, 'index')) {
@@ -298,13 +276,7 @@ function debug_window ($name, $trace, $content) {
 		$insp = $content;
 	}
 
-	$OUT = '<pre class="'.$name.'"><em><b>'.$name.'</b> &nbsp;'.$trace."</em>\n".$insp."</pre>\n";
-
-	if (defined('PLAINTEXT') && PLAINTEXT) {
-		$OUT = "-- ".html_entity_decode(strip_tags($OUT))."--\n\n";
-	}
-
-	return $OUT;
+	return '<pre class="'.$name.'"><em><b>'.$name.'</b> &nbsp; '.$trace."</em>\n".$insp.'</pre>';
 }
 
 /* Display contents of a variable, disabled with DEBUG = false */
@@ -503,5 +475,13 @@ function strip_between ($input, $b='/*', $e='*/') {
 
 	return $s;
 }
+
+
+header('Content-type: text/javascript');
+$file = _ROOT."/src/jam.js";
+
+$content = render($file);
+if (empty($content)) error('Render error: '.$file);
+print $content;
 
 ?>

@@ -10,7 +10,7 @@ extend('JAM.Dom.Element', {
 	// >> based on Prototype
 	getSize: function(){
 		if (this.getCss('display') != 'none') {
-			return { w: this.getCss('width')||this.offsetWidth, h: this.getCss('height')||this.offsetHeight };
+			return { w: this.offsetWidth, h: this.offsetHeight };
 		}
 		else { /* Display temporarily, measure and restore. */
 			this.setCss({ visibility: 'hidden', position: 'absolute', display: '' });
