@@ -1,6 +1,6 @@
 
 provides('Dom.Element');
-requires('Shape');
+requires('Lang.Shape');
 
 extend('JAM.Dom.Element', {
 
@@ -172,30 +172,39 @@ extend('JAM.Dom.Element', {
 		return new JAM.Shape( P.x, P.y, S.w, S.h );
 	},
 
+	setArea: function(A) {
+		this.setPosition({ x:A.x, y:A.y });
+		this.setSize({ w:A.w, h:A.h });
+		return this;
+	},
+
 	getPosition: function() {
 		return this.getCumulativePosition();
 	},
 
 	setPosition: function(pos) {
 		this.makePositioned();
-		this.setCss('left',(pos.x || 0)+'px');
-		this.setCss('top', (pos.y || 0)+'px');
+//		var TOP =  ((pos.y||0) - (this.getCss('paddingTop') + this.getCss('borderTopWidth'))).round();
+//		var LEFT = ((pos.x||0) - (this.getCss('paddingLeft') + this.getCss('borderLeftWidth'))).round();
+		var TOP =  (pos.y||0);
+		var LEFT = (pos.x||0);
+		this.setCss({ 
+			top:  TOP+'px',
+			left: LEFT+'px'
+		});
 		return this;
 	},
 
 	position: function(pos) {
-		if (pos) {
-			return this.setPosition(pos);
-		}
-		else {
-			return this.getPosition();
-		}
+		return pos?
+			this.setPosition(pos):
+			this.getPosition();
 	},
 
 	makePositioned: function() {
 		var pos = this.getCss('position');
 		if (pos == 'static' || !pos) {
-			this.setCss({ position: 'absolute' });
+			this.setCss({ position: 'absolute', margin:'' });
 			// Opera returns the offset relative to the positioning context, when an
 			// element is position relative but top and left have not been defined
 			if (window.opera) {

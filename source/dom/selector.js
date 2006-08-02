@@ -45,7 +45,7 @@ JAM.Dom.selector = {
 			if (isUndef(D)) {
 				var T = [];
 			}
-			else if (isElement(D)) {
+			else if (!isString(D)) {
 				var T = [D];
 			}
 			else if (D.indexOf('#') == 0) {

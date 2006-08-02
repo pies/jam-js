@@ -9,6 +9,7 @@ extend('JAM.Dom.Element', {
 	// >> based on Prototype
 	getCss: function(){
 		/* Opera, static element */
+		var THIS = this;
 		var OSE = ('Opera'==JAM.Browser.name && 'static'==this.style.position);
 		/* Any number of property names */
 		var V = $A(arguments).collect(function(prop){
@@ -19,14 +20,18 @@ extend('JAM.Dom.Element', {
 				/* Value was explicitly set in CSS */
 				this.style[prop] || 
 				/* IE */
-				this.currentStyle[name.camelize()] ||
+				(this.currentStyle && this.currentStyle[name.camelize()]) ||
 				/* If FF/O */
-				document.defaultView.getComputerStyle(T,null).getPropertyValue(prop) || 
+				document.defaultView.getComputedStyle(THIS,null).getPropertyValue(prop) || 
 				/* None found */
-				null; } catch (e) { var v = null; };
+				null; } catch (e) { debug(e); var v = ''; };
+
+			var RX = new RegExp('^([0-9]+)px$','i');
+			var M;
+			if (M = v.match( new RegExp('^([0-9]+)px$','i') )) v = parseInt(M[1]);
 
 			return v=='auto'? null : v;
-		});
+		}.bind(this));
 
 		return 1==arguments.length? V[0] : V;
 	},
