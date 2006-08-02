@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<title>Sputnik!Labs</title>
+<style type="text/css"><!--
+.Changelog LI {
+	padding:.2em 0;
+	}
+--></style>
+</head><body>
+
+<h1>JAM<br><small>A Javascript library that aims to impress.</small></h1>
+
+<h2>JAM 0.2-dev released</h2>
+
+<p>Changelog:</p>
+<ul class="Changelog">
+	<li>(new) <code>Number.prototype.round()</code> (i.e. <code>var three = (10/3).round()</code>),</li>
+	<li>(new) <code>Number.prototype.abs()</code> (i.e. <code>var two = (-2).abs()</code>),</li>
+	<li>(new) <code>Number.prototype.or()</code> (i.e. <code>var five = (0).or(5);</code>),</li>
+	<li>(new)
+added a set of IE 5.0 compatibility fixes by Dean Edwards, although I'm
+not sure if it helps JAM work with IE5 in any way, to be decided if it
+stays or goes,</li>
+	<li>(new) classes extended with extend() get an additional method -- bound(), i.e. <code>connect(obj, 'click', MyClass.bound('Foo'))</code> is the same as <code>connect(obj, 'click', MyClass.Foo.bind(MyClass))</code> but shorter</li>
+	<li>(new)
+JAM.Event tracks mouse button events to be able to provide correct
+information about currently pressed mouse buttons at any point of
+execution, available via the <code>event.mouse.buttons</code> array,</li>
+	<li>(new) <code>String.prototype.reverse</code> (i.e. <code>'abc'.reverse() == 'cba'</code>),</li>
+	<li>(new) <code>Array.prototype.add()</code> is same as Array.push(), but chainable (i.e. <code>[a,b].add(c)</code> returns <code>[a,b,c]</code> whereas <code>[a,b].push(c)</code> does not),</li>
+	<li>(new) <code>Array.prototype.only()</code> limits contents of the array to elements present in the provided array (a logical AND on two arrays, i.e. <code>[a,b,c].only([a,c,e]) == [a,c]</code>),</li>
+	<li>(new) <code>Array.prototype.not()</code> removes elements present in the provided array (a logical NOT, i.e. <code>[a,b,c].not([a,c,e]) == [b]</code>),</li>
+	<li>(new) <code>Array.prototype.empty()</code> which simply empties the array, but is chainable</li>
+	<li>(new) <code>Element.prototype.name()</code> returns element's tagName or 'element' of tagName not present</li>
+	<li>(new) <code>Element.prototype.set()</code> called with just one, non-array parameter (i.e. <code>$('#bar').set('Hello')</code>)
+sets element's value (if applicable) or innerHTML (otherwise);
+likewise, element.get() called with no parameters returns element.value
+(if applicable) or element.innerHTML (otherwise)</li>
+	<li>(new) <code>Element.prototype.placeOver()</code> tries to place elements centered h and v over an element</li>
+	<li>(new) <code>JAM.Dom.selector</code>
+tries to be compatibile with Prototype's $() function (i.e. $('foobar')
+tries to find all &lt;foobar&gt; tags, and if it finds none such, tries
+$('#foobar') automatically),</li>
+	<li>(new) <code>JAM.Dom.Draggable</code> (applied with <code>JAM.Dom.Draggable.apply(element)</code>) allows to drag an element around with mouse, see the code for details</li>
+	<li>(new) <code>JAM.Dom.Resizable</code> (applied with <code>JAM.Dom.Resizable.apply(element)</code>) allows to resize an element around with mouse, see the code for details</li>
+	<li>(update) refactored the main JAM class</li>
+	<li>(update) some <code>Element.prototype</code>
+refactoring and changes, notably getStyle(), setStyle() and undoStyle()
+renamed to getCss(), setCss() and restoreCss(), and position() (via
+getPosition()) returns element's <em>cumulative</em> position which can break some code,</li>
+	<li>(fixed) <code>isObject()</code> alias didn't get exported</li>
+	<li>(fixed) packed code had errors because of a few missing semicolons,</li>
+	<li>(fixed) <code>Element.off(N)</code> didn't disconnect the event binding, now it disconnects N last bindings (or all if no N),</li>
+</ul>
+
+<p>Packed filesize still below 20kB and there's room for improvements and deletions. That was a busy two weeks, let me tell you.</p>	
+
+<p>©2006 Michał Tatarynowicz (<a href="mailto:tatarynowicz@gmail.com">tatarynowicz@gmail.com</a>)</p>
+
+</body></html>
