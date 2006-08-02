@@ -79,15 +79,11 @@ var publish = JAM.Lang.Class.publish;
 
 extend('JAM.Lang.Base', {
 
-	published: ['min', 'max', 'areEqual'],
+	published: ['areEqual','max','min'],
 
-	min: function(A,B) {
-		return A<B? A: B;
-	},
+	min: Math.min,
 
-	max: function(A,B) {
-		return A>B? A: B;
-	},
+	max: Math.max,
 
 	equalObjects: function (A,B) {
 		var J = JAM.Lang.Base;
