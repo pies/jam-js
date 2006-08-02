@@ -26,7 +26,10 @@ var JAM = {
 	LOADED:    [],
 
 	provides: function (lib) {
-		if (!this.LOADED.has(lib)) {
+		if (this.LOADED.has(lib)) {
+			this.report(this.E_WARNING, 'Library already loaded: '.lib);
+		}
+		else {
 			this.LOADED.push(lib);
 		}
 	},
@@ -52,11 +55,9 @@ var requires = function(lib) { JAM.requires(lib) };
 // <<
 
 
-<?=insert('lang/base', false)?>
-<?=insert('lang/funct', false)?>
-<?=insert('lang/array', false)?>
-
-
+<?=insert('lang/base')?>
+<?=insert('lang/funct')?>
+<?=insert('lang/array')?>
 <?=insert('ready')?>
 <?=insert('lang/events')?>
 <?=insert('browser')?>

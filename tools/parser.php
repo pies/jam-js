@@ -3,7 +3,6 @@
 /* Configuration ------------------------------------------------------------ */
 
 define('DEBUG', true);
-define('PLAINTEXT', true); // HTML pretty-print, or simple plaintext?
 
 
 /* Directory layout --------------------------------------------------------- */
@@ -40,13 +39,6 @@ define ('SUNDAY',    0);
 
 /* Main framework functions ------------------------------------------------- */
 
-/**
-Takes an argument from provided array, if it doesn't exist, returns default 
-*/
-function GET ($array, $index, $default=false) {
-	return isset($array[$index])? $array[$index]: $default;
-}
-
 /* Loads a library or libraries (provided as parameters) */
 function load ($name /*, ... */) {
 	foreach(func_get_args() as $name) {
@@ -60,10 +52,11 @@ function load ($name /*, ... */) {
 	return true;
 }
 
-
 /* Relatively renders and inserts files inside 
    current template (a "smarter" include() ) */
-function insert ($name, $allow_external_linking=true) {
+function insert () {
+	$args = func_get_args();
+	$args = array_flatten($args);
 
 	$caller = caller_file();
 	$relative_to = dirname($caller);
@@ -71,20 +64,18 @@ function insert ($name, $allow_external_linking=true) {
 
 	$root = str_replace('\\', '/', _ROOT.'/source/');
 	$output = '';
+	foreach ($args as $file) {
 
-	$path = str_replace('\\', '/', 
-		(($name[0] == '/')? SOURCE_PATH: $relative_to)."/$name.$format");
+		$path = str_replace('\\', '/', 
+			(($file[0] == '/')? _APP: $relative_to)."/$file.$format");
 
-	$header = "// {$name} ".str_repeat('>', 67-strlen($path))." \n\n";
-
-	if (OM_DYNAMIC==OUTPUT_MODE) {
-		return "JAM.requires('$name');\n";
+		$name = str_replace($root, '', $path);
+		$header = "// {$name} ".str_repeat('>', 67-strlen($name))." \n\n";
+		$output .= $header.render($path)."\n\n\n";
 	}
-	else {
-		return $header.render($path)."\n\n\n";
-	}
+
+	return $output;
 }
-
 
 /* Renders a PHP template */
 function render ($__name, $__data=array()) {
@@ -92,13 +83,12 @@ function render ($__name, $__data=array()) {
 	$N = $__name;
 
 	if (!is_readable_file($N)) {
-		$caller = caller_file(2);
+		$caller = caller_file();
 		$relative_to = dirname($caller);
-		$format = substr($N, strrpos($N, '.')+1);
-		if (!$format) $N .= substr($caller, strrpos($caller, '.')+1);
-		$N = $relative_to.'/'.$N;//.'.'.$format;
+		$format = substr($caller, strrpos($caller, '.')+1);
+		$N = $relative_to.$__name.'.'.$format;
 	}
-
+	
 	if (!is_readable_file($N)) {
 		error("Can't open file $__name");
 	}
@@ -298,13 +288,7 @@ function debug_window ($name, $trace, $content) {
 		$insp = $content;
 	}
 
-	$OUT = '<pre class="'.$name.'"><em><b>'.$name.'</b> &nbsp;'.$trace."</em>\n".$insp."</pre>\n";
-
-	if (defined('PLAINTEXT') && PLAINTEXT) {
-		$OUT = "-- ".html_entity_decode(strip_tags($OUT))."--\n\n";
-	}
-
-	return $OUT;
+	return '<pre class="'.$name.'"><em><b>'.$name.'</b> &nbsp; '.$trace."</em>\n".$insp.'</pre>';
 }
 
 /* Display contents of a variable, disabled with DEBUG = false */
