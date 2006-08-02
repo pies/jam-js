@@ -1,14 +1,14 @@
 
-provides('Shape');
+provides('Lang.Shape');
 
-JAM.Shape = function(x,y,w,h){
+JAM.Lang.Shape = function(x,y,w,h){
 	this.x = x;
 	this.y = y;
 	this.w = w;
 	this.h = h;
 };
 	
-extend( JAM.Shape.prototype, {
+extend( JAM.Lang.Shape.prototype, {
 
 	contains: function(A) { 
 //		debug(A.x,A.y);

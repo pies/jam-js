@@ -1,6 +1,6 @@
 
 provides('Dom.Element');
-requires('Lang.Shape');
+//requires('Lang.Shape');
 
 extend('JAM.Dom.Element', {
 
@@ -169,7 +169,7 @@ extend('JAM.Dom.Element', {
 	getArea: function() {
 		var P = this.getPosition();
 		var S = this.getSize();
-		return new JAM.Shape( P.x, P.y, S.w, S.h );
+		return new JAM.Lang.Shape( P.x, P.y, S.w, S.h );
 	},
 
 	setArea: function(A) {

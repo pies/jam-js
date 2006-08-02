@@ -49,7 +49,7 @@ extend('JAM.Lang.Events', {
 	_mouseButtons:  [],
 
 	_initMouseTracker: function(){
-		setInterval(function(){ this._trackMousePosition_Flag = true }, 50);
+		setInterval(function(){ JAM.Lang.Events._trackMousePosition_Flag = true }, 50);
 		connect(window, ['mouseup', 'mousedown'], this._trackMouseButtons.bind(this));
 		connect(document, ['mousemove'], this._trackMousePosition.bind(this));
 	},
@@ -59,7 +59,6 @@ extend('JAM.Lang.Events', {
 	_trackMousePosition: function(event){
 		if (!this._trackMousePosition_Flag) return false;
 		this._trackMousePosition_Flag = false;
-
 		var E = event.event;
 		this._mousePosition = {
 			x: E.clientX, 
@@ -94,9 +93,9 @@ extend('JAM.Lang.Events', {
 		if (!obj) return obj;
         
         /* or see normalize method */
-        if (name == 'mousewheel' && !(JAM.Browser.is('Opera') || JAM.Browser.is('IE'))){ 
-             name = 'DOMMouseScroll';                         
-        } 
+        if (name == 'mousewheel' && !(JAM.Browser.is('IE') || JAM.Browser.is('Opera')) ){
+                name = 'DOMMouseScroll';                         
+        }
 //        name = JAM.Lang.Events.normalize[name] ?  JAM.Lang.Events.normalize[name]() : name;
 		var onlyOne = (JAM.Lang.Type && JAM.Lang.Type.isString(name));
 
@@ -239,20 +238,24 @@ JAM.Lang.Event.prototype = {
         	return undefined;
         }
     },
+
+    
+
     // normalized to 1;	
     wheel: function(){
-        var delta = 0;
         if (!this.event) return 0;
+        var delta = 0;
         var E = this.event;
         delta = E.wheelDelta ? E.wheelDelta : - E.detail;
-        if(JAM.Browser.is('Opera'))delta =-delta;
+        if(JAM.Browser.is('Opera'))delta = -delta;
         return delta ? delta/Math.abs(delta): 0
     },
 
 	// >> from Mochikit & Prototype
+    _mouse : null,
 	mouse: function () { 
 		if (!this.event) return;
-
+        if (this._mouse !== null) return this._mouse;
 		var E = this.event;
 		var B  = document.documentElement || document.body;
 
@@ -264,14 +267,22 @@ JAM.Lang.Event.prototype = {
 
 		var M = JAM.Lang.Events._mousePosition;
 
-		return /*(this.type && this.type.match(/mouse|click|contextmenu/))?*/ {
+		/*(this.type && this.type.match(/mouse|click|contextmenu/))? */ 
+         var self = this;
+         this._mouse = {
 	        x:       max( 0, M.x ),
 	        y:       max( 0, M.y ),
 	        page: {x:  max( 0, M.page.x || (M.x + B.scrollLeft - B.clientLeft) )
 	              ,y:  max( 0, M.page.y || (M.y + B.scrollTop  - B.clientTop) )
             },
+            item: function(){
+                var evt = self._mouse.page;
+                var elm = $(self.src).getPosition();
+                return { x:evt.x - elm.x, y: evt.y - elm.y }
+            },
 	        buttons: JAM.Lang.Events._mouseButtons
     	}/*:undefined*/;
+        return this._mouse;
     },
 	// <<
 
