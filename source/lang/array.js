@@ -9,30 +9,31 @@ extend('JAM.Lang.Array', {
 
 	// ITERATES over each element with a CALLBACK (F)unction
 	each: function(F) {
-		for (var i = 0; i < this.length; ++i) {
+        var L = this.length;
+		for (var i = 0; i < L; ++i) {
 			F.apply(this[i], [this[i], i]);
 		}
 		return this;
 	},
 
 	// ITERATES over each element with a CALLBACK (F)unction COLLECTING return VALUES
-	collect: function(F) {
-	    var R = [];
-	    this.each(function(I,N) {
-			R.push( F.apply(I, [I,N]) );
-	    });
-	    return R;
-	},
-
+    collect: function(F) {
+        var R = []; var L = this.length;
+        for(var i=0;i<L;++i){  // faster than each
+            R.push( F.apply(this[i], [this[i],i]) );
+        }
+        return R;
+    },
 	// Returns an array of values where F(value) == true
 	// >> from Prototype
-	filter: function(F) {
-		var R = [];
-		this.each(function(I,N){
-			if (F.apply(I, [I,N])) R.push(I);
-		});
-		return R;
-	},
+    filter: function(F) {
+        var R = []; var L = this.length;
+        for(var i =0;i<L;++i){
+            var E = this[i];
+            if (F.apply(E, [E,i])) R.push(E);
+        };
+        return R;
+    },
 	// <<
 
 	add: function(A) {
@@ -56,14 +57,13 @@ extend('JAM.Lang.Array', {
 
 	// Returns the last element for which F(elem,best) was true
 	// Used by min() and max().
-	choose: function(F) {
-		var best = this.shift();
-		this.each(function(elem){
-			if (F(elem,best)) best = elem;
-		});
-		return best;
-	},
-
+    choose: function(F) {
+        var best = this.shift(); var L = this.length;
+        for(var i=0;i<L;++i){
+            if (F(this[i],best)) best = this[i];
+        };
+        return best;
+    },
 	min: function () {
 		return this.choose(Math.min);
 	},
@@ -88,24 +88,25 @@ extend('JAM.Lang.Array', {
 
 	// Return an array of NON-EMPTY values
 	// >> from Prototype
-	compact: function() {
-		var R = [];
-		this.each(function(F){
-			if (!isNull(F) && F) R.push(F);
-		});
-		return extend(R, JAM.Lang.Array);
-	},
+    compact: function() {
+        var R = []; var L = this.length;
+        for(var i=0;i<L;++i){
+            var F = this[i]; if (!isNull(F) && F) R.push(F);
+        }
+        return extend(R,JAM.Lang.Array);
+    },
 	// <<
 
 	// Converts a multi-dimensional array into a flat list.
 	// >> from Prototype
-	flatten: function() {
-		var R = [];
-		this.each(function(item){
-			R = R.concat(isArray(item)? $A(item).flatten() : [item]);
-		});
-		return R;
-	},
+    flatten: function() {
+        var R = []; var L = this.length;
+        for(var i=0;i<L;++i){
+            var E = this[i];
+            R = R.concat(isArray(E)? $A(E).flatten() : [E]);
+        };
+        return R;
+    },
 	// <<
 
 	// Converts an ITERABLE object TO an ARRAY
@@ -135,27 +136,27 @@ extend('JAM.Lang.Array', {
 		return !($A(this).has(I));
 	},
 
-	unique: function() {
-		var result = [];
-		this.each(function(elem){
-			if (!(result.has(elem))) result.push(elem);
-		});
-		return result;
-	},
-
+   unique: function() {
+        var result = [];
+        for(var i=0;i<this.length;++i){
+            var elem = this[i];
+            if (!(result.has(elem))) result.push(elem);
+        };
+        return result;
+    },
 	skip: function(N) {
 		for ( i=0 ; i<(N||1) ; ++i ) {
-			this.shift;
+			this.shift();
 		}
 	},
-
-	isEqualTo: function(A) {
-		this.each(function(I,N){
-			if ((I && I.isEqualTo && !I.isEqualTo(A[N])) || I != A[N]) return false;
-		});
-		return true;
-	}
-
+    isEqualTo: function(A) {
+        var L = this.length;
+        for(var i=0;i<L;i++){
+            I = this[i];
+            if ((I && I.isEqualTo && !I.isEqualTo(A[i])) || I != A[i]) return false;
+        }
+        return true;
+    }
 });
 
 
