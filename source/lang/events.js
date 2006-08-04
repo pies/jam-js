@@ -277,8 +277,14 @@ JAM.Lang.Event.prototype = {
             },
             item: function(){
                 var evt = self._mouse.page;
-                var elm = $(self.src).getPosition();
-                return { x:evt.x - elm.x, y: evt.y - elm.y }
+                var el = $(self.src)
+                var elm = el.getPosition();
+                /* looks like getCss not working for either any of these */
+                var lb = el.getCss('paddingLeft') + el.getCss('borderLeftWidth');
+                var tb = el.getCss('paddingTop') + el.getCss('borderWidth');
+                debug(el + '\n' + lb + '\n' + tb + '\n' + el.getCss('border'));
+                debug(el.getCss('border'));
+                return { x:evt.x - elm.x /* - lb */, y: evt.y - elm.y /* - tb */ }
             },
 	        buttons: JAM.Lang.Events._mouseButtons
     	}/*:undefined*/;

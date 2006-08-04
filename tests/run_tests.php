@@ -1,4 +1,4 @@
-<? require(dirname(dirname(__FILE__)).'/init.php'); ?>
+<?php require(dirname(dirname(__FILE__)).'/init.php'); ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -32,6 +32,7 @@ var TEST = new UnTest('JAM');
 <?=render(dirname(__FILE__).'/cases/dom/element.js');?>
 <?=render(dirname(__FILE__).'/cases/dom/creator.js');?>
 <?=render(dirname(__FILE__).'/cases/dom/selector.js');?>
+<?=render(dirname(__FILE__).'/cases/io/ajax.js');?>
 
 TEST.run();
 
