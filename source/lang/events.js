@@ -28,16 +28,16 @@ extend('JAM.Lang.Events', {
     _listener: function (obj, func, context) {
 		return function(event){ 
 			var E = new JAM.Lang.Event(obj, event);
-			(isString(func)? obj[func]: func).apply(context||obj, [E]); 
+			(isString(func)? obj[func]: func).apply(context||obj, [E]);  
 		}
     },
 
 	_connect: function(obj, name, listener) {
 		if (obj.addEventListener) {
-			obj.addEventListener(name, listener, false);
+			obj.addEventListener(name.substr(2), listener, false);
 		}
 		else if (obj.attachEvent) {
-			obj.attachEvent('on'+name, listener); // useCapture unsupported
+			obj.attachEvent(name, listener); // useCapture unsupported
 		}
 
 		var ID = [obj, name, listener];
@@ -88,6 +88,10 @@ extend('JAM.Lang.Events', {
 		this._mouseButtons = ('mousedown' == T)? P.add(B): P.not(B);
 	},
 
+ /*
+     connect(gEBI('zoomin'),'click',function(){gb.zoom(1)})
+     connect(this.TIC,'EVENT_PAN_START',this,'panStart');
+  */
 	connect: function (obj, name, context, func) {
 		if (window.$) obj = $(obj);
 		if (!obj) return obj;
@@ -100,11 +104,14 @@ extend('JAM.Lang.Events', {
 		var onlyOne = (JAM.Lang.Type && JAM.Lang.Type.isString(name));
 
 		var names = onlyOne? [name]: name;
-
+        names = names.collect(function(n){
+           return (n.substr(0,2) == 'on')? n: 'on' + n;
+        });
+            
 		if (isFunction(context)) {
-			var func = context; 
-			var context = obj;
-		};
+			func = context; 
+			context = obj;
+		}
 
 		var listener = JAM.Lang.Events._listener(obj, func, context);
 
@@ -121,10 +128,10 @@ extend('JAM.Lang.Events', {
 		var listener = event_id[2];
 
 		if (obj.removeEventListener) {
-			obj.removeEventListener(name, listener, false);
+			obj.removeEventListener(name.substr(2), listener, false);
 		}
 		else if (obj.detachEvent) {
-			obj.detachEvent('on'+name, listener);
+			obj.detachEvent(name, listener);
 		}
 	},
 
@@ -173,7 +180,7 @@ extend('JAM.Lang.Events', {
     },
 
     trigger: function (elem, type, data) {
-		var obs;
+        var obs;
 		JAM.Lang.Events._observers.each(function(obs){
 			if ((obs[0]==elem) && (obs[1]==type)) {
 				obs[2].apply(elem, [new JAM.Lang.Event]);
