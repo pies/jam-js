@@ -35,6 +35,7 @@ var JAM = {
 		if (this.LOADED.has(lib)) return;
 		
 		var path = this.INCLUDES+lib.toLowerCase().replace('.', '/');
+		debug(path);
 		try {
 			document.write("<scr"+"ipt type='text/javascript' src='"+path+"'></scr"+"ipt>");
 		} catch (e) {

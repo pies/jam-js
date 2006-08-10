@@ -47,6 +47,7 @@ JAM.Lang.Class = {
 		}
 
 		publish(setr);
+
 		return getr;
 	},
 

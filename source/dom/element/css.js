@@ -15,8 +15,8 @@ extend('JAM.Dom.Element', {
 		var V = $A(arguments).collect(function(prop){
 			/* If position is static, those are automatic by definition */
 			if (OSE && ['left','top','right','bottom'].has(prop)) return null;
-            var v;
-			try { v = 
+
+			try { var v = 
 				/* Value was explicitly set in CSS */
 				this.style[prop] || 
 				/* IE */
@@ -24,7 +24,7 @@ extend('JAM.Dom.Element', {
 				/* If FF/O */
 				document.defaultView.getComputedStyle(THIS,null).getPropertyValue(prop) || 
 				/* None found */
-				''; } catch (e) { debug(e); v = ''; };
+				null; } catch (e) { debug(e); var v = ''; };
 
 			var RX = new RegExp('^([0-9]+)px$','i');
 			var M;

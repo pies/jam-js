@@ -25,12 +25,6 @@ else if (JAM.Browser.is('IE')) {
 }
 else {
 	// We really should downgrade to something better than alert()
-	var debug = (document.getElementById('debug')) ?  
-    function(msg){ 
-       $('#debug').html('<pre>' + msg + '</pre>'); 
-    } 
-    : function(msg){
-        alert('you can get rid of this error by creating a div with id="debug"\n\n' + msg);
-    }
+	var debug = alert;
 	var trace = alert;
 }
