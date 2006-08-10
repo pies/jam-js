@@ -1,12 +1,6 @@
 
 extend('JAM.Dom.Element', { 
 
-	size: function () { 
-		return arguments.length? 
-			this.setSize(arguments[0]): 
-			this.getSize();
-	},
-
 	// >> based on Prototype
 	getSize: function(){
 		if (this.getCss('display') != 'none') {

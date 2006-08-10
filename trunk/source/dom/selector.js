@@ -18,7 +18,7 @@ JAM.Dom.selector = {
 
 	// Returns an ARRAY OF ELEMENTS
 	getMany: function(Descr, Contexts, limit_to) {
-
+        var dd = Descr;
 		var O = extend([], JAM.Dom.array);
 
 		switch (getType(Descr)) {
@@ -37,7 +37,6 @@ JAM.Dom.selector = {
 
 		Descr    = $A(Descr).compact();
 		Contexts = $A(Contexts).compact().unique();
-
 		var D = Descr.shift();
 
 		Contexts.each(function(context){
@@ -80,14 +79,12 @@ JAM.Dom.selector = {
 
 			O = O.concat(T);
 		});
-		
 		$A(O).each(function(elem){ 
 			if (!elem._extended) {
-				extend(elem, JAM.Dom.Element);
-				elem._extended = true;
+				extend(elem, JAM.Dom.Element); 
+				elem._extended = 1;
 			}
 		});
-
 		return extend(O, JAM.Dom.array);
 	},
 

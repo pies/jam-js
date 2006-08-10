@@ -30,7 +30,7 @@ extend('JAM.Dom.Resizable', {
 			.makePositioned()
 			.addClass('Resized');
 
-		var size = this.element.size();
+		var size = this.element.getSize();
 		var mouse = event.mouse();
 		this.offset = {
 			w: mouse.x - size.w,
@@ -39,7 +39,7 @@ extend('JAM.Dom.Resizable', {
 
 		this.content = (this.element.params && this.element.params.content) || false;
 		if (this.content) {
-			var content_size = this.content.size();
+			var content_size = this.content.getSize();
 			this.contentOffset = {
 				w: size.w - content_size.w,
 				h: size.h - content_size.h
