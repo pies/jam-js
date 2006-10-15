@@ -79,7 +79,7 @@ var publish = JAM.Lang.Class.publish;
 
 extend('JAM.Lang.Base', {
 
-	published: ['areEqual','max','min'],
+	published: ['min', 'max', 'areEqual'],
 
 	min: Math.min,
 
