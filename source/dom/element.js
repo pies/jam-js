@@ -184,14 +184,8 @@ extend('JAM.Dom.Element', {
 
 	setPosition: function(pos) {
 		this.makePositioned();
-//		var TOP =  ((pos.y||0) - (this.getCss('paddingTop') + this.getCss('borderTopWidth'))).round();
-//		var LEFT = ((pos.x||0) - (this.getCss('paddingLeft') + this.getCss('borderLeftWidth'))).round();
-		var TOP =  (pos.y||0);
-		var LEFT = (pos.x||0);
-		this.setCss({ 
-			top:  TOP+'px',
-			left: LEFT+'px'
-		});
+		this.setCss('left',(pos.x || 0)+'px');
+		this.setCss('top', (pos.y || 0)+'px');
 		return this;
 	},
 

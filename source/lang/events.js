@@ -49,16 +49,16 @@ extend('JAM.Lang.Events', {
 	_mouseButtons:  [],
 
 	_initMouseTracker: function(){
-		setInterval(function(){ this._trackMousePosition_Flag = true }, 50);
-		connect(window, ['mouseup', 'mousedown'], this._trackMouseButtons.bind(this));
-		connect(document, ['mousemove'], this._trackMousePosition.bind(this));
+		//setInterval(function(){ this._trackMousePosition_Flag = true }, 50);
+		//connect(window, ['mouseup', 'mousedown'], this._trackMouseButtons.bind(this));
+		//connect(document, ['mousemove'], this._trackMousePosition.bind(this));
 	},
 
-	_trackMousePosition_Flag: false,
+	//_trackMousePosition_Flag: false,
 
 	_trackMousePosition: function(event){
-		if (!this._trackMousePosition_Flag) return false;
-		this._trackMousePosition_Flag = false;
+		//if (!this._trackMousePosition_Flag) return false;
+		//this._trackMousePosition_Flag = false;
 
 		var E = event.event;
 		this._mousePosition = {
@@ -209,7 +209,7 @@ JAM.Lang.Event = function(src, event){
 
 
 
-JAM.Lang.Event.prototype = {
+extend(JAM.Lang.Event.prototype, {
 
     modifier: function () { 
 		var E = this.event;
@@ -256,9 +256,7 @@ JAM.Lang.Event.prototype = {
 		var E = this.event;
 		var B  = document.documentElement || document.body;
 
-//		debug(this.type);
-		if (this.type && this.type.match(/mousemove|click|contextmenu/)) {
-//			debug (this.type);
+		if (this.type && this.type.match(/mouse|click|contextmenu/)) {
 			JAM.Lang.Events._trackMousePosition(this);
 		}
 
@@ -287,6 +285,7 @@ JAM.Lang.Event.prototype = {
     preventDefault: function () { var E = this.event;
         (E.preventDefault && E.preventDefault()) || (E.returnValue = false);
     }
+});
 };
 
 

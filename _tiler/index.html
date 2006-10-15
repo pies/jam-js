@@ -1,0 +1,201 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+
+
+
+<title>Tiler</title>
+<script src="jam-0.3-dev.js" language="javascript" type="text/javascript"></script>
+<script type="text/javascript">
+
+JAM.onLoad(function(){
+//	var panel = document.getElementById('panel');
+	document.body.on('mousedown', Tiler.startMoving.bind(Tiler));
+	document.body.on('mouseup',   Tiler.stopMoving.bind(Tiler));
+	document.body.on('mousemove', Tiler.move.bind(Tiler));
+	//Tiler.move(false, true);
+	Tiler.create('#viewer', '#panel');
+	Tiler.paint();
+});
+
+
+var Tiler = {
+
+	tile_size:  { w:200, h:200 },
+	board_size: { w: 64, h: 64 },
+	panel_size: { w:  4, h:  4 },
+	view_size:  { w:  2, h:  2 },
+
+	element: null,
+	imgs: [],
+
+	top_left:   { x:  0, y:  0 },
+	offset:     { x:  0, y:  0 },  
+	
+	is_moving:  false,
+	prev_pos:   { x:  0, y:  0 },
+
+//	start_pos:  { x:  0, y:  0 },
+//	current_offset: { x:  0, y:  0 },
+	
+	create: function (id) {
+		this.element = $(id);
+		var ps = this.panel_size;
+		var ts = this.tile_size;
+		var bs = this.board_size;
+		
+		this.top_left = { 
+			x: Math.round((bs.w-ps.w)/2), 
+			y: Math.round((bs.h-ps.h)/2)
+		};
+		this.offset = {
+			x: this.top_left.x * this.tile_size.w,
+			y: this.top_left.y * this.tile_size.h
+		};
+
+		var imgs = [];
+		for (var ii=0; ii<ps.w; ii++) {
+			imgs[ii] = [];
+			for (var jj=0; jj<ps.h; jj++) {
+				var img = HTML.IMG({ 
+					width:  ts.w, 
+					height: ts.h, 
+					border: '0', 
+					src:    'blank.gif',
+					css:    {
+						position: 'absolute',
+						left: ((ii-1)*ts.w)+'px',
+						top:  ((jj-1)*ts.h)+'px'
+					}
+				});
+				this.element.append(img);
+				imgs[ii][jj] = img;
+			}
+		}
+		this.imgs = imgs;
+	},
+
+	paint: function(){
+		var ts = this.tile_size;
+		var ps = this.panel_size;
+
+		var tx = this.top_left.x;
+		var ty = this.top_left.y;
+		var ox = this.offset.x;
+		var oy = this.offset.y;
+
+		console.debug(tx, ty);
+
+		for (var ii=0; ii<ps.w; ii++) {
+			for (var jj=0; jj<ps.h; jj++) {
+				var img = this.imgs[ii][jj];
+				//console.debug( oy, jj, ps.h, (ox+(ii*ts.w))+'px', (oy+((ps.h-jj-1)*ts.h))+'px' );
+				img.setCss({ left: (ox+(ii*ts.w))+'px', top: (oy+((ps.h-jj-1)*ts.h))+'px' });
+				//console.debug('http://128.32.253.248/mttile/image_cache/1/',ii,tx,this.zeropad(ii+tx),'_',ii,tx,this.zeropad(jj+ty),'.jpg');
+				img.src = 'http://128.32.253.248/mttile/image_cache/1/'+this.zeropad(ii+tx)+'_'+this.zeropad(jj+ty)+'.jpg';
+			}
+		}
+	},	
+
+	
+	moveUp: function(){
+		this.imgs.unshift(this.imgs.pop());
+	},
+
+	moveDown: function(){
+		this.imgs.push(this.imgs.shift());
+	},
+
+	moveLeft: function(){
+		for (var ii=0; ii<this.imgs.length; ii++) {
+			this.imgs[ii].unshift(this.imgs[ii].pop());
+		}
+	},
+
+	moveRight: function(){
+		for (var ii=0; ii<this.imgs.length; ii++) {
+			this.imgs[ii].push(this.imgs[ii].shift());
+		}
+	},
+
+	move: function(event){
+		if (!this.is_moving) return;
+		
+		var prev   = this.prev_pos;
+		var mouse  = event && event.mouse() || { x:0,y:0 };
+		if (prev.x==mouse.x&&prev.y==mouse.y) return;
+		
+		this.offset.x += mouse.x-prev.x;
+		this.offset.y += mouse.y-prev.y;
+		this.prev_pos = mouse;
+
+		var old_top = this.top_left;
+		var new_top = {
+			x: Math.floor(this.offset.x/this.tile_size.w),
+			y: Math.floor(this.offset.y/this.tile_size.h)
+		};
+
+			console.debug(this.offset.x, this.tile_size.w);
+		
+		if (old_top.x < new_top.x) this.moveRight();
+		if (old_top.x > new_top.x) this.moveLeft();
+		if (old_top.y < new_top.y) this.moveDown();
+		if (old_top.y > new_top.y) this.moveUp();
+console.debug(new_top.x, new_top.y);
+		this.top_left = new_top;
+
+		this.paint();
+	},
+
+	zeropad: function (n) {
+		if (n<10) return '000'+n;
+		if (n<100) return '00'+n;
+		if (n<1000) return '0'+n;
+		return n;
+	},
+
+	startMoving: function (E) {
+		var mouse = E.mouse();
+		this.prev_pos = { x: mouse.x, y: mouse.y };
+		this.is_moving = true;
+		E.stop();
+		return false;
+	},
+	
+	stopMoving: function (E) {
+		this.is_moving = false;
+		
+		var prev   = this.prev_pos;
+		var mouse  = E && E.mouse() || { x:0,y:0 };
+		this.offset.x += mouse.x-prev.x;
+		this.offset.y += mouse.y-prev.y;
+
+		E.stop();
+		return false;
+	}
+}
+
+</script>
+<style>
+P { line-height:1px; }
+IMG { border:1px solid Red }
+</style>
+</head>
+<body style="background-color:#666">
+
+<div id="viewer" style="width:400px;height:400px;position:absolute;top:100px;left:100px;overflow:hidden;">
+
+<div id="panel" style="background-color:#FFF;width:800px;height:800px;position:absolute;top:0;left:0;overflow:hidden;">
+
+
+
+<!--p id="panel" style="margin:0;padding:0;width:1250px;height:1250px;"><img src="test.jpg" width="200" height="200" border="0" alt="1:4" id="i_1_1"/><img src="test.jpg" width="200" height="200" border="0" alt="2:4" id="i_1_2"/><img src="test.jpg" width="200" height="200" border="0" alt="3:4" id="i_1_3"/><img src="test.jpg" width="200" height="200" border="0" alt="4:4" id="i_1_4"/><img src="test.jpg" width="200" height="200" border="0" alt="5:4" id="i_1_5"/><img src="test.jpg" width="200" height="200" border="0" alt="5:4" id="i_1_6"/><img src="test.jpg" width="200" height="200" border="0" alt="1:4" id="i_2_1"/><img src="test.jpg" width="200" height="200" border="0" alt="2:4" id="i_2_2"/><img src="test.jpg" width="200" height="200" border="0" alt="3:4" id="i_2_3"/><img src="test.jpg" width="200" height="200" border="0" alt="4:4" id="i_2_4"/><img src="test.jpg" width="200" height="200" border="0" alt="5:4" id="i_2_5"/><img src="test.jpg" width="200" height="200" border="0" alt="5:4" id="i_2_6"/><img src="test.jpg" width="200" height="200" border="0" alt="1:4" id="i_3_1"/><img src="test.jpg" width="200" height="200" border="0" alt="2:4" id="i_3_2"/><img src="test.jpg" width="200" height="200" border="0" alt="3:4" id="i_3_3"/><img src="test.jpg" width="200" height="200" border="0" alt="4:4" id="i_3_4"/><img src="test.jpg" width="200" height="200" border="0" alt="5:4" id="i_3_5"/><img src="test.jpg" width="200" height="200" border="0" alt="5:4" id="i_3_6"/><img src="test.jpg" width="200" height="200" border="0" alt="1:4" id="i_4_1"/><img src="test.jpg" width="200" height="200" border="0" alt="2:4" id="i_4_2"/><img src="test.jpg" width="200" height="200" border="0" alt="3:4" id="i_4_3"/><img src="test.jpg" width="200" height="200" border="0" alt="4:4" id="i_4_4"/><img src="test.jpg" width="200" height="200" border="0" alt="5:4" id="i_4_5"/><img src="test.jpg" width="200" height="200" border="0" alt="5:4" id="i_4_6"/><img src="test.jpg" width="200" height="200" border="0" alt="1:4" id="i_5_1"/><img src="test.jpg" width="200" height="200" border="0" alt="2:4" id="i_5_2"/><img src="test.jpg" width="200" height="200" border="0" alt="3:4" id="i_5_3"/><img src="test.jpg" width="200" height="200" border="0" alt="4:4" id="i_5_4"/><img src="test.jpg" width="200" height="200" border="0" alt="5:4" id="i_5_5"/><img src="test.jpg" width="200" height="200" border="0" alt="5:4" id="i_5_6"/><img src="test.jpg" width="200" height="200" border="0" alt="1:4" id="i_6_1"/><img src="test.jpg" width="200" height="200" border="0" alt="2:4" id="i_6_2"/><img src="test.jpg" width="200" height="200" border="0" alt="3:4" id="i_6_3"/><img src="test.jpg" width="200" height="200" border="0" alt="4:4" id="i_6_4"/><img src="test.jpg" width="200" height="200" border="0" alt="5:4" id="i_6_5"/><img src="test.jpg" width="200" height="200" border="0" alt="5:4" id="i_6_6"/></p-->
+
+</div>
+</div>
+<!--p id="debug" style="margin:0;border:4px solid Red;position:absolute;right:0;top:0;width:100px;height:200px;">Test</p-->
+</body>
+
+</html>

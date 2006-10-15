@@ -24,10 +24,11 @@ extend('JAM.Dom.Element', {
 				/* If FF/O */
 				document.defaultView.getComputedStyle(THIS,null).getPropertyValue(prop) || 
 				/* None found */
-				null; } catch (e) { debug(e); var v = ''; };
+				null; } catch (e) { var v = ''; };
 
 			var RX = new RegExp('^([0-9]+)px$','i');
 			var M;
+			if (isNull(v)) v = '';
 			if (M = v.match( new RegExp('^([0-9]+)px$','i') )) v = parseInt(M[1]);
 
 			return v=='auto'? null : v;

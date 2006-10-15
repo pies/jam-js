@@ -176,7 +176,8 @@ var FX = create({
 	},
 
 	LOOP: function(){
-		if (++this.STEP > this.TOTAL) return this.STOP();
+		this.STEP++;
+		if (this.STEP > this.TOTAL) return this.STOP();
 		this.APPLY();
 	},
 
