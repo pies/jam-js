@@ -12,16 +12,15 @@ extend('JAM.Dom.Draggable', {
 	
 
 	init: function() {
-//		$$('.Draggable').add('.DragHandle')
-//			.on('mousedown', this.pickUp.bind(this));
 		connect(document, 'mouseup', this.putDown.bind(this));
 	},
 
 	apply: function (element, options) {
-		$$(element)
-			.addClass('Draggable')
-			.add('.DragHandle', element)
-				.on('mousedown', this.pickUp.bind(this));
+		var el = $(element);
+		var dh = $('.DragHandle', element) || el;
+
+		el.addClass('Draggable');
+		dh.on('mousedown', this.pickUp.bind(this));
 	},
 
 	findMovable: function(clicked) {

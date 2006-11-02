@@ -1,9 +1,9 @@
 
 JAM.Browser = {
 
-	os:       null,
-	name:     null,
-	version:  null,
+	os:      null,
+	name:    null,
+	version: null,
 
 	guess: function(){
 		var has = function(str) { return navigator.userAgent.indexOf(str) >= 0 };
@@ -22,14 +22,15 @@ JAM.Browser = {
 
 		this.version = parseFloat(navigator.appVersion);
 	},
-    nicks: {FF:'Mozilla', FireFox:'Mozilla', O:'Opera', S:'Safari'},
+
 	is: function(name, version) {
 		if (!this.name) JAM.Browser.guess.apply(JAM.Browser);
-        name = JAM.Browser.nicks[name] ? JAM.Browser.nicks[name] : name; 
+
+		if (name == 'FF' || name == 'Firefox') name = 'Mozilla';
+		if (name == 'O') name = 'Opera';
+		if (name == 'S') name = 'Safari';
+
 		return (this.name == name) && (!version || (this.version == parseFloat(version)));
-	},
-    hasBoxModel: function(){
-        return document.compatMode == "CSS1Compat" || !JAM.Browser.is('IE') 
-    }
+	}
 
 };

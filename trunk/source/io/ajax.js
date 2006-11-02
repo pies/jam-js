@@ -9,18 +9,12 @@ JAM.Ajax = create({
 		this.transport  = this.getTransport();
 		this.request(url);
 	},
-    /* only check once which to use: */
-    getTransport: 
-        (window.ActiveXObject) ? function(){ return new ActiveXObject('Microsoft.XMLHTTP');}
-        : ((window.XMLHttpRequest) ? function(){return new XMLHttpRequest(); } 
-            : function(){ return false; }),
-   /* 
+
 	getTransport: function() {
 		if (window.ActiveXObject)  return new ActiveXObject('Microsoft.XMLHTTP');
 		if (window.XMLHttpRequest) return new XMLHttpRequest();
 		return false;
 	},
-    */
 	
 	request: function(url) {
 		this.transport.open(this.method, url, true);

@@ -1,6 +1,6 @@
 
 provides('Dom.Element');
-//requires('Lang.Shape');
+requires('Shape');
 
 extend('JAM.Dom.Element', {
 
@@ -169,7 +169,7 @@ extend('JAM.Dom.Element', {
 	getArea: function() {
 		var P = this.getPosition();
 		var S = this.getSize();
-		return new JAM.Lang.Shape( P.x, P.y, S.w, S.h );
+		return new JAM.Shape( P.x, P.y, S.w, S.h );
 	},
 
 	setArea: function(A) {
@@ -184,14 +184,8 @@ extend('JAM.Dom.Element', {
 
 	setPosition: function(pos) {
 		this.makePositioned();
-//		var TOP =  ((pos.y||0) - (this.getCss('paddingTop') + this.getCss('borderTopWidth'))).round();
-//		var LEFT = ((pos.x||0) - (this.getCss('paddingLeft') + this.getCss('borderLeftWidth'))).round();
-		var TOP =  (pos.y||0);
-		var LEFT = (pos.x||0);
-		this.setCss({ 
-			top:  TOP+'px',
-			left: LEFT+'px'
-		});
+		this.setCss('left',(pos.x || 0)+'px');
+		this.setCss('top', (pos.y || 0)+'px');
 		return this;
 	},
 

@@ -12,25 +12,19 @@ else if (JAM.Browser.is('FF') && window.console) {
 else if (JAM.Browser.is('IE')) {
 	// IE also has error reporting (if a bit strange)
 	var reportStatus = [];
-	function report ( msg ) {
-		reportStatus.push ( msg );
+	function debug (msg) {
+		reportStatus.push(msg);
+		alert(reportStatus.join ("\n"));
 	}
-	function showReport ( err ) {
-	    alert ( reportStatus.join ( "\n" ) );
-	}
-	window.onerror = function ( err, url, line ) {
-		report ( err + " [" + url + " - line " + line + "]" );
-	    showReport();
+	window.onerror = function (err, url, line) {
+		debug( err + " [" + url + " - line " + line + "]" );
 	}
 }
 else {
 	// We really should downgrade to something better than alert()
-	var debug = (document.getElementById('debug')) ?  
-    function(msg){ 
-       $('#debug').html('<pre>' + msg + '</pre>'); 
-    } 
-    : function(msg){
-        alert('you can get rid of this error by creating a div with id="debug"\n\n' + msg);
-    }
+	var debug_output = document.getElementById('debug');
+	var debug = debug_output?
+		function(msg){ debug_output.innerHTML += (msg); }:
+		function(msg){ alert(msg + "\n\n" + '(Please add <pre id="debug"></pre> to your document to remove this message)'); };
 	var trace = alert;
 }
